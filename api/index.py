@@ -11,7 +11,10 @@ from django.db.utils import ProgrammingError, OperationalError
 try:
     call_command('migrate', interactive=False, verbosity=0)
 except (ProgrammingError, OperationalError):
-    call_command('migrate', interactive=False, verbosity=0, fake_initial=True)
+    try:
+        call_command('migrate', interactive=False, verbosity=0, fake_initial=True)
+    except (ProgrammingError, OperationalError):
+        pass
 
 if os.getenv('DJANGO_SUPERUSER_USERNAME') and os.getenv('DJANGO_SUPERUSER_PASSWORD'):
     from django.contrib.auth import get_user_model
