@@ -10,7 +10,7 @@ attrs==25.4.0
 bcc==0.35.0
 bcrypt==4.3.0
 beautifulsoup4==4.15.0
-blivet @ file:///builddir/build/BUILD/python-blivet-3.14.1-build/blivet-3.14.1
+blivet==3.14.1
 boto3==1.43.79
 botocore==1.43.79
 Brlapi==0.8.7
@@ -19,7 +19,6 @@ certifi==2026.1.4
 cffi==2.0.0
 charset-normalizer==3.4.4
 click==8.3.3
-cockpit @ file:///builddir/build/BUILD/cockpit-366-build/cockpit-366/tmp/wheel/cockpit-366-py3-none-any.whl#sha256=43219e42894cac4f28a7270e1c9db346136c3db7572b307e31c7c2d06c094971
 colorama==0.4.6
 crispy-bootstrap4==2026.2
 crypt_r==3.13.1
