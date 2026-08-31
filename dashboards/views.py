@@ -1,17 +1,36 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseForbidden
 
 from blogs.models import Blog, Category
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from .forms import AddUserForm, BlogPostForm, CategoryForm, EditUserForm
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
 
+def superuser_required(view_func):
+    """Allow only superusers. Requires login as well."""
+    @login_required(login_url='login')
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden('You do not have permission to view this page.')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def get_user_posts(request):
+    """Staff/superusers see all posts; authors only see their own."""
+    if request.user.is_superuser:
+        return Blog.objects.all()
+    return Blog.objects.filter(author=request.user)
+
+
 @login_required(login_url='login')
 def dashboard(request):
     category_count = Category.objects.all().count()
-    blogs_count = Blog.objects.all().count()
+    blogs_count = get_user_posts(request).count()
 
     context = {
         'category_count': category_count,
@@ -19,10 +38,17 @@ def dashboard(request):
     }
     return render(request, 'dashboard/dashboard.html', context)
 
+
+@superuser_required
 def categories(request):
-    return render(request, 'dashboard/categories.html')
+    cats = Category.objects.all()
+    context = {
+        'categories': cats,
+    }
+    return render(request, 'dashboard/categories.html', context)
 
 
+@superuser_required
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -36,6 +62,7 @@ def add_category(request):
     return render(request, 'dashboard/add_category.html', context)
 
 
+@superuser_required
 def edit_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
@@ -51,20 +78,24 @@ def edit_category(request, pk):
     return render(request, 'dashboard/edit_category.html', context)
 
 
+@superuser_required
+@require_POST
 def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     category.delete()
     return redirect('categories')
 
 
+@login_required(login_url='login')
 def posts(request):
-    posts = Blog.objects.all()
+    posts = get_user_posts(request)
     context = {
         'posts': posts,
     }
     return render(request, 'dashboard/posts.html', context)
 
 
+@login_required(login_url='login')
 def add_post(request):
     if request.method == 'POST':
         form = BlogPostForm(request.POST, request.FILES)
@@ -86,8 +117,12 @@ def add_post(request):
     return render(request, 'dashboard/add_post.html', context)
 
 
+@login_required(login_url='login')
 def edit_post(request, pk):
     post = get_object_or_404(Blog, pk=pk)
+    # Authors can only edit their own posts; superusers can edit any post.
+    if not request.user.is_superuser and post.author != request.user:
+        return HttpResponseForbidden('You can only edit your own posts.')
     if request.method == 'POST':
         form = BlogPostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
@@ -104,12 +139,18 @@ def edit_post(request, pk):
     return render(request, 'dashboard/edit_post.html', context)
 
 
+@login_required(login_url='login')
+@require_POST
 def delete_post(request, pk):
     post = get_object_or_404(Blog, pk=pk)
+    # Authors can only delete their own posts; superusers can delete any post.
+    if not request.user.is_superuser and post.author != request.user:
+        return HttpResponseForbidden('You can only delete your own posts.')
     post.delete()
     return redirect('posts')
 
 
+@superuser_required
 def users(request):
     users = User.objects.all()
     context = {
@@ -118,6 +159,7 @@ def users(request):
     return render(request, 'dashboard/users.html', context)
 
 
+@superuser_required
 def add_user(request):
     if request.method == 'POST':
         form = AddUserForm(request.POST)
@@ -133,6 +175,7 @@ def add_user(request):
     return render(request, 'dashboard/add_user.html', context)
 
 
+@superuser_required
 def edit_user(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
@@ -147,6 +190,8 @@ def edit_user(request, pk):
     return render(request, 'dashboard/edit_user.html', context)
 
 
+@superuser_required
+@require_POST
 def delete_user(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.delete()

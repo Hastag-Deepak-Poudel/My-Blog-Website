@@ -160,6 +160,31 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR /'media'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Supabase Storage (S3-compatible) for uploaded files.
+# On Vercel the filesystem is read-only, so files must be stored externally.
+if os.getenv('S3_BUCKET_NAME') and os.getenv('S3_ENDPOINT_URL'):
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+            'OPTIONS': {},
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
+    AWS_ACCESS_KEY_ID = os.getenv('S3_ACCESS_KEY_ID', '')
+    AWS_SECRET_ACCESS_KEY = os.getenv('S3_SECRET_ACCESS_KEY', '')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('S3_BUCKET_NAME', '')
+    AWS_S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL', '')
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_REGION_NAME = 'us-east-1'
+    AWS_S3_ADDRESSING_STYLE = 'path'
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    if os.getenv('S3_CUSTOM_DOMAIN'):
+        AWS_S3_CUSTOM_DOMAIN = os.getenv('S3_CUSTOM_DOMAIN')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

@@ -18,9 +18,11 @@
       </a>
       {% endif %}
 
+      {% if user.is_superuser %}
       <a href="{% url 'categories' %}" class="dashboard-sidebar-link {% if '/categories/' in request.path %}active{% endif %}">
         <i class="fa fa-folder"></i> Categories
       </a>
+      {% endif %}
 
       <a href="{% url 'posts' %}" class="dashboard-sidebar-link {% if '/posts/' in request.path %}active{% endif %}">
         <i class="fa fa-file-text"></i> Posts
