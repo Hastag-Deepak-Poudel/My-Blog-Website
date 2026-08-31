@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+  <!-- Left sidebar -->
+  {% include 'dashboard/sidebar.html' %}
+
+  <!-- Right side content -->
+  <div class="col-md-9">
+    <div class="dashboard-content">
+      <div class="dashboard-header">
+        <h2 class="dashboard-title"><i class="fa fa-tachometer"></i> Dashboard</h2>
+        <p class="dashboard-subtitle">Welcome back, <strong>{{ user.get_full_name|default:user.username }}</strong></p>
+      </div>
+
+      <div class="row stats-row">
+        <div class="col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-folder"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">{{ category_count }}</span>
+              <span class="stat-label">Categories</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-file-text"></i></div>
+            <div class="stat-info">
+              <span class="stat-value">{{ blogs_count }}</span>
+              <span class="stat-label">Blog Posts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-nav-action">
+        <a href="{% url 'posts' %}" class="btn btn-warning dashboard-add-btn"><i class="fa fa-file-text"></i> Manage Posts</a>
+        <a href="{% url 'categories' %}" class="btn btn-outline-secondary dashboard-outline-btn"><i class="fa fa-folder"></i> Manage Categories</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

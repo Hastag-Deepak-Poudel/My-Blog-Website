@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero Image -->
+<div class="single-hero">
+    <img class="single-hero-img" src="{{ single_blog.featured_image.url }}" alt="{{ single_blog.title }}">
+    <div class="single-hero-overlay">
+        <div class="single-hero-content">
+            <a class="single-hero-category" href="#!">{{ single_blog.category }}</a>
+            <h1 class="single-hero-title">{{ single_blog.title }}</h1>
+            <div class="single-hero-meta">
+                <span><i class="fa fa-user"></i> {{ single_blog.author }}</span>
+                <span><i class="fa fa-calendar"></i> {{ single_blog.created_at }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Post Content -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <article class="single-article">
+
+                <section class="single-body">
+                    <p class="single-lead">{{ single_blog.short_description }}</p>
+                    <div class="single-text">{{ single_blog.blog_body }}</div>
+                </section>
+
+                <!-- Divider -->
+                <hr class="single-divider">
+
+                <!-- Comments Section -->
+                <section class="single-comments">
+                    <h4 class="single-comments-heading">
+                        <i class="fa fa-comments"></i> Comments ({{ comment_count }})
+                    </h4>
+
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <div class="single-comment">
+                            <div class="single-comment-avatar">
+                                {{ comment.user.username|first|upper }}
+                            </div>
+                            <div class="single-comment-body">
+                                <div class="single-comment-header">
+                                    <strong>{{ comment.user }}</strong>
+                                    <small>{{ comment.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="single-comment-text">{{ comment }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="single-comment-empty">
+                            <i class="fa fa-comment-o"></i>
+                            <p>No comments yet. Be the first to share your thoughts!</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Comment Form -->
+                    <div class="single-comment-form">
+                        {% if user.is_authenticated %}
+                        <h5>Leave a Comment</h5>
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <textarea name="comment" class="form-control" rows="4" placeholder="Write your comment here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-submit-comment">
+                                <i class="fa fa-paper-plane"></i> Post Comment
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="single-comment-login">
+                            <i class="fa fa-lock"></i>
+                            <p><a href="{% url 'login' %}">Login</a> to write a comment</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </section>
+            </article>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <aside class="single-sidebar">
+
+                <!-- Categories -->
+                <div class="single-sidebar-card">
+                    <h4 class="single-sidebar-title"><i class="fa fa-folder"></i> Categories</h4>
+                    <ul class="single-sidebar-list">
+                        {% for cat in categories %}
+                        <li>
+                            <a href="{% url 'posts_by_category' cat.id %}">
+                                <i class="fa fa-angle-right"></i> {{ cat.category_name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Social Links -->
+                {% if social_links %}
+                <div class="single-sidebar-card">
+                    <h4 class="single-sidebar-title"><i class="fa fa-share-alt"></i> Follow Us</h4>
+                    <div class="single-social-links">
+                        {% for i in social_links %}
+                        <a href="{{ i.link }}" target="_blank" class="single-social-link">
+                            <i class="fa fa-link"></i> {{ i.platform }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </aside>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

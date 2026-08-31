@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+  <!-- Left sidebar -->
+  {% include 'dashboard/sidebar.html' %}
+
+  <!-- Right side content -->
+  <div class="col-md-9">
+    <div class="dashboard-content">
+      <div class="dashboard-header dashboard-header-row">
+        <div>
+          <h2 class="dashboard-title"><i class="fa fa-pencil-square-o"></i> All Posts</h2>
+          <p class="dashboard-subtitle">Manage your blog posts</p>
+        </div>
+        <a href="{% url 'add_post' %}" class="btn btn-warning dashboard-add-btn">
+          <i class="fa fa-plus"></i> Add New
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table dashboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Author</th>
+              <th>Status</th>
+              <th class="text-center">Featured</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for post in posts %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="post-title">{{ post.title }}</td>
+              <td>{{ post.category }}</td>
+              <td>{{ post.author }}</td>
+              <td>
+                {% if post.status == 'Published' %}
+                <span class="status-badge status-published">{{ post.status }}</span>
+                {% else %}
+                <span class="status-badge status-draft">{{ post.status }}</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                {% if post.is_featured %}
+                <span class="featured-badge"><i class="fa fa-star"></i> Featured</span>
+                {% else %}
+                <span class="featured-badge featured-no"><i class="fa fa-star-o"></i> No</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'edit_post' post.id %}" class="table-action" title="Edit">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <a href="{% url 'delete_post' post.id %}" class="table-action table-action-danger" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

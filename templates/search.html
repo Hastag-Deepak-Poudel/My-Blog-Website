@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header">
+  <h1 class="page-header-title">
+    <i class="fa fa-search"></i> Search Results
+  </h1>
+  <p class="page-header-subtitle">
+    Showing results for <span class="keyword-tag">"{{ keyword }}"</span>
+  </p>
+</div>
+
+<!-- Results Grid -->
+{% if blogs %}
+<div class="row">
+  {% for i in blogs %}
+  <div class="col-md-6">
+    <a href="{% url 'blogs' i.slug %}" class="post-card">
+      <div class="post-card-img-wrap">
+        <img src="{{ i.featured_image.url }}" alt="{{ i.title }}" class="post-card-img">
+      </div>
+      <div class="post-card-body">
+        <h3 class="post-card-title">{{ i.title }}</h3>
+        <div class="post-card-meta">
+          <span><i class="fa fa-calendar"></i> {{ i.created_at|timesince }} ago</span>
+          <span><i class="fa fa-user"></i> {{ i.author }}</span>
+        </div>
+        <p class="post-card-desc">{{ i.short_description|truncatewords:25 }}</p>
+        <span class="read-more">Read more <i class="fa fa-arrow-right"></i></span>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fa fa-search"></i>
+  <h4>No results found</h4>
+  <p>No articles matched your search for "<span>{{ keyword }}</span>".</p>
+</div>
+{% endif %}
+
+{% endblock %}

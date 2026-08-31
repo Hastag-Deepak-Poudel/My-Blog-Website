@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row">
+  <!-- Left sidebar -->
+  {% include 'dashboard/sidebar.html' %}
+
+  <!-- Right side content -->
+  <div class="col-md-9">
+    {% if perms.auth.view_user %}
+    <div class="dashboard-content">
+      <div class="dashboard-header dashboard-header-row">
+        <div>
+          <h2 class="dashboard-title"><i class="fa fa-users"></i> All Users</h2>
+          <p class="dashboard-subtitle">Manage user accounts and roles</p>
+        </div>
+        <a href="{% url 'add_user' %}" class="btn btn-warning dashboard-add-btn">
+          <i class="fa fa-plus"></i> Add User
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table dashboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Full Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th class="text-center">Active</th>
+              <th class="text-center">Staff</th>
+              <th class="text-center">Superuser</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for u in users %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="user-name">{{ u.first_name }} {{ u.last_name }}</td>
+              <td>
+                <span class="user-username">
+                  <span class="user-avatar-sm">{{ u.username|first|upper }}</span>
+                  {{ u.username }}
+                </span>
+              </td>
+              <td>{{ u.email }}</td>
+              <td class="text-center">
+                {% if u.is_active %}<span class="status-badge status-published">Yes</span>{% else %}<span class="status-badge status-draft">No</span>{% endif %}
+              </td>
+              <td class="text-center">
+                {% if u.is_staff %}<span class="status-badge status-published">Yes</span>{% else %}<span class="status-badge status-draft">No</span>{% endif %}
+              </td>
+              <td class="text-center">
+                {% if u.is_superuser %}<span class="status-badge status-published">Yes</span>{% else %}<span class="status-badge status-draft">No</span>{% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'edit_user' u.id %}" class="table-action" title="Edit">
+                  <i class="fa fa-edit"></i>
+                </a>
+                <a href="{% url 'delete_user' u.id %}" class="table-action table-action-danger" title="Delete">
+                  <i class="fa fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="dashboard-message">
+      <div class="dashboard-message-icon"><i class="fa fa-lock"></i></div>
+      <h5>You do not have permission to view this page</h5>
+      <p class="dashboard-message-text">Contact an administrator if you believe this is a mistake.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
