@@ -173,3 +173,5 @@ cython_debug/
 .aider*
 .vercel
 .env*
+.env.local
+
