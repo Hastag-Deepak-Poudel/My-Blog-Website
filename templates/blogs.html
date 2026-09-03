@@ -24,7 +24,7 @@
 
                 <section class="single-body">
                     <p class="single-lead">{{ single_blog.short_description }}</p>
-                    <div class="single-text">{{ single_blog.blog_body }}</div>
+                    <div class="single-text">{{ single_blog.blog_body|safe }}</div>
                 </section>
 
                 <!-- Divider -->
